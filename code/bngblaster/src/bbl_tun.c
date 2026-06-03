@@ -126,10 +126,22 @@ bbl_tun_pppoe_tx_job(timer_s *timer) {
 
     eth.dst = session->server_mac;
     eth.src = session->client_mac;
-    eth.qinq = session->access_config->qinq;
+    /* Use configurable TPID for outer VLAN, fallback to qinq flag for backward compatibility */
+    if (session->access_config->access_tpid_outer) {
+        eth.qinq = (session->access_config->access_tpid_outer == ETH_TYPE_QINQ);
+    } else {
+        eth.qinq = session->access_config->qinq;
+    }
     eth.vlan_outer = session->vlan_key.outer_vlan_id;
     eth.vlan_inner = session->vlan_key.inner_vlan_id;
     eth.vlan_three = session->access_third_vlan;
+    /* Set TPID for inner and third VLANs (default to standard VLAN if not configured) */
+    eth.vlan_tpid_inner = session->access_config->access_tpid_inner ? session->access_config->access_tpid_inner : ETH_TYPE_VLAN;
+    eth.vlan_tpid_three = session->access_config->access_tpid_three ? session->access_config->access_tpid_three : ETH_TYPE_VLAN;
+    /* Use per-VLAN priority configuration */
+    eth.vlan_outer_priority = session->access_config->access_vlan_priority_outer ? session->access_config->access_vlan_priority_outer : 0;
+    eth.vlan_inner_priority = session->access_config->access_vlan_priority_inner ? session->access_config->access_vlan_priority_inner : eth.vlan_outer_priority;
+    eth.vlan_three_priority = session->access_config->access_vlan_priority_three ? session->access_config->access_vlan_priority_three : eth.vlan_outer_priority;
     eth.type = ETH_TYPE_PPPOE_SESSION;
     eth.next = &pppoe;
     pppoe.session_id = session->pppoe_session_id;
@@ -164,10 +176,22 @@ bbl_tun_ipoe_tx_job(timer_s *timer) {
 
     eth.dst = session->server_mac;
     eth.src = session->client_mac;
-    eth.qinq = session->access_config->qinq;
+    /* Use configurable TPID for outer VLAN, fallback to qinq flag for backward compatibility */
+    if (session->access_config->access_tpid_outer) {
+        eth.qinq = (session->access_config->access_tpid_outer == ETH_TYPE_QINQ);
+    } else {
+        eth.qinq = session->access_config->qinq;
+    }
     eth.vlan_outer = session->vlan_key.outer_vlan_id;
     eth.vlan_inner = session->vlan_key.inner_vlan_id;
     eth.vlan_three = session->access_third_vlan;
+    /* Set TPID for inner and third VLANs (default to standard VLAN if not configured) */
+    eth.vlan_tpid_inner = session->access_config->access_tpid_inner ? session->access_config->access_tpid_inner : ETH_TYPE_VLAN;
+    eth.vlan_tpid_three = session->access_config->access_tpid_three ? session->access_config->access_tpid_three : ETH_TYPE_VLAN;
+    /* Use per-VLAN priority configuration */
+    eth.vlan_outer_priority = session->access_config->access_vlan_priority_outer ? session->access_config->access_vlan_priority_outer : 0;
+    eth.vlan_inner_priority = session->access_config->access_vlan_priority_inner ? session->access_config->access_vlan_priority_inner : eth.vlan_outer_priority;
+    eth.vlan_three_priority = session->access_config->access_vlan_priority_three ? session->access_config->access_vlan_priority_three : eth.vlan_outer_priority;
     while(true) {
         len = read(session->tun_fd, buf, sizeof(buf));
         if(len > 0) {

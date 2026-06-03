@@ -1,0 +1,82 @@
+{
+  "interfaces": {
+    "network": {
+      "interface": "veth0",
+      "address": "0.0.0.0",
+      "gateway": "0.0.0.0",
+      "address-ipv6": "::",
+      "gateway-ipv6": "::"
+    },
+    "access": [
+    {
+      "interface": "veth1",
+      "outer-vlan": 100,
+      "inner-vlan": 200,
+      "third-vlan": 300,
+      "outer-tpid": 33024,
+      "inner-tpid": 34984,
+      "third-tpid": 33024,
+      "priority-outer": 0,
+      "priority-inner": 0,
+      "priority-third": 7,
+      "authentication-protocol": "PAP"
+    }
+    ]
+  },
+  "sessions": {
+    "count": 1,
+    "max-outstanding": 800,
+    "start-rate": 400,
+    "stop-rate": 400
+  },
+  "pppoe": {
+    "reconnect": true,
+    "discovery-timeout": 3,
+    "discovery-retry": 10,
+    "host-uniq": true,
+    "vlan-priority": 6
+  },
+  "ppp": {
+    "mru": 1492,
+    "authentication": {
+      "username": "user{session-global}@rtbrick.com",
+      "password": "test"
+    }
+  },
+  "dhcpv6": {
+    "enable": false,
+    "rapid-commit": false
+  },
+  "access-line": {
+    "agent-remote-id": "DEU.RTBRICK.{session-global}",
+    "agent-circuit-id": "0.0.0.0/0.0.0.0 eth 0:{session-global}"
+  },
+  "access-line-profiles": [
+    {
+      "access-line-profile-id": 1,
+      "act-up": 2000,
+      "act-down": 16000,
+      "min-up": 64,
+      "min-down": 1024,
+      "att-up": 2048,
+      "att-down": 16384,
+      "max-up": 2040,
+      "max-down": 16380,
+      "min-up-low": 32,
+      "min-down-low": 1024,
+      "max-interl-delay-up": 100,
+      "act-interl-delay-up": 101,
+      "max-interl-delay-down": 200,
+      "act-interl-delay-down": 201,
+      "data-link-encaps": 66051,
+      "dsl-type": 5
+    }
+  ],
+  "session-traffic": {
+    "autostart": true,
+    "ipv4-pps": 10,
+    "ipv4-address": "10.0.0.2",
+    "ipv6-pps": 0,
+    "ipv6pd-pps": 0
+  }
+}

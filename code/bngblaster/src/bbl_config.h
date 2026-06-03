@@ -67,8 +67,18 @@ typedef struct bbl_access_config_
     uint16_t access_inner_vlan_step;
     uint16_t access_third_vlan;
 
+    /* VLAN priority configuration (0-7 for 802.1p priority bits) */
+    uint8_t  access_vlan_priority_outer; /* priority for outer VLAN */
+    uint8_t  access_vlan_priority_inner; /* priority for inner VLAN */
+    uint8_t  access_vlan_priority_three; /* priority for third VLAN */
+
+    /* VLAN TPID configuration (0x8100 for standard VLAN, 0x88a8 for Q-in-Q) */
+    uint16_t access_tpid_outer; /* ethertype for outer VLAN */
+    uint16_t access_tpid_inner; /* ethertype for inner VLAN */
+    uint16_t access_tpid_three; /* ethertype for third VLAN */
+
     bool monkey; /* enable monkey testing */
-    bool qinq; /* use ethertype 0x88a8 */
+    bool qinq; /* use ethertype 0x88a8 for outer VLAN (kept for backward compatibility) */
     bool tcp;
     bool tun;
 

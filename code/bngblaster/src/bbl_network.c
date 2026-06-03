@@ -308,6 +308,15 @@ bbl_network_update_eth(bbl_network_interface_s *interface,
     eth->vlan_outer = interface->vlan;
     eth->vlan_inner = 0;
     eth->vlan_three = 0;
+    /* Set default VLAN priorities (can be made configurable later) */
+    eth->vlan_outer_priority = 0;
+    eth->vlan_inner_priority = 0;
+    eth->vlan_three_priority = 0;
+    /* Set default TPIDs (standard VLAN ethertype) */
+    eth->vlan_tpid_inner = ETH_TYPE_VLAN;
+    eth->vlan_tpid_three = ETH_TYPE_VLAN;
+    /* For outer VLAN, use standard VLAN ethertype (can be made configurable) */
+    eth->qinq = false;
     if(interface->tx_label.label) {
         eth->mpls = &interface->tx_label;
     } else {

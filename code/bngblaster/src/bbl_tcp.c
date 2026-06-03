@@ -1104,13 +1104,18 @@ bbl_tcp_netif_output_ipv4_session(struct netif *netif, struct pbuf *p, const ip4
 
     eth.src = session->client_mac;
     eth.dst = session->server_mac;
-    eth.qinq = session->access_config->qinq;
+    /* Use configurable TPID for outer VLAN, fallback to qinq flag for backward compatibility */
+    if (session->access_config->access_tpid_outer) {
+        eth.qinq = (session->access_config->access_tpid_outer == ETH_TYPE_QINQ);
+    } else {
+        eth.qinq = session->access_config->qinq;
+    }
     eth.vlan_outer = session->vlan_key.outer_vlan_id;
     eth.vlan_inner = session->vlan_key.inner_vlan_id;
     eth.vlan_three = session->access_third_vlan;
     if(session->access_type == ACCESS_TYPE_PPPOE) {
         eth.type = ETH_TYPE_PPPOE_SESSION;
-        eth.vlan_outer_priority = g_ctx->config.pppoe_vlan_priority;
+        eth.vlan_outer_priority = session->access_config->access_vlan_priority_outer ? session->access_config->access_vlan_priority_outer : g_ctx->config.pppoe_vlan_priority;
         eth.next = &pppoe;
         pppoe.session_id = session->pppoe_session_id;
         pppoe.protocol = PROTOCOL_IPV4;
@@ -1119,11 +1124,16 @@ bbl_tcp_netif_output_ipv4_session(struct netif *netif, struct pbuf *p, const ip4
     } else {
         /* IPoE */
         eth.type = ETH_TYPE_IPV4;
-        eth.vlan_outer_priority = g_ctx->config.ipoe_vlan_priority;
+        eth.vlan_outer_priority = session->access_config->access_vlan_priority_outer ? session->access_config->access_vlan_priority_outer : g_ctx->config.ipoe_vlan_priority;
         eth.lwip = true;
         eth.next = p;
     }
-    eth.vlan_inner_priority = eth.vlan_outer_priority;
+    eth.vlan_inner_priority = session->access_config->access_vlan_priority_inner ? session->access_config->access_vlan_priority_inner : eth.vlan_outer_priority;
+    /* Set TPID for inner and third VLANs (default to standard VLAN if not configured) */
+    eth.vlan_tpid_inner = session->access_config->access_tpid_inner ? session->access_config->access_tpid_inner : ETH_TYPE_VLAN;
+    eth.vlan_tpid_three = session->access_config->access_tpid_three ? session->access_config->access_tpid_three : ETH_TYPE_VLAN;
+    /* Use per-VLAN priority configuration */
+    eth.vlan_three_priority = session->access_config->access_vlan_priority_three ? session->access_config->access_vlan_priority_three : eth.vlan_outer_priority;
 
     if(bbl_txq_to_buffer(session->access_interface->txq, &eth) != BBL_TXQ_OK) {
         return ERR_IF;

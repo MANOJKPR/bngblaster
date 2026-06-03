@@ -1050,9 +1050,11 @@ json_parse_access_interface(json_t *access_interface, bbl_access_config_s *acces
         "outer-vlan-min", "outer-vlan-max", "outer-vlan-step",
         "inner-vlan", "inner-vlan-min", "inner-vlan-max",
         "inner-vlan-step", "third-vlan", "ppp-mru",
-        "address", "address-iter", "gateway", "gateway-iter", 
+        "outer-tpid", "inner-tpid", "third-tpid",
+        "priority-outer", "priority-inner", "priority-third",
+        "address", "address-iter", "gateway", "gateway-iter",
         "ipv6-link-local", "address-ipv6", "gateway-ipv6",
-        "username", "password", "authentication-protocol", 
+        "username", "password", "authentication-protocol",
         "agent-circuit-id", "agent-remote-id",
         "access-aggregation-circuit-id",
         "rate-up", "rate-down", "dsl-type",
@@ -1060,7 +1062,7 @@ json_parse_access_interface(json_t *access_interface, bbl_access_config_s *acces
         "dhcp-vendor-class-id",
         "ipv4", "ip6cp", "dhcpv6",
         "dhcpv6-ldra", "ipv6", "igmp-autostart",
-        "igmp-version", "session-traffic-autostart", 
+        "igmp-version", "session-traffic-autostart",
         "session-group-id", "stream-group-id",
         "session-limit", "arp-client-group-id",
         "http-client-group-id", "icmp-client-group-id",
@@ -1214,6 +1216,36 @@ json_parse_access_interface(json_t *access_interface, bbl_access_config_s *acces
     if(value) {
         access_config->access_third_vlan = json_number_value(value);
         access_config->access_third_vlan &= 4095;
+    }
+
+    JSON_OBJ_GET_NUMBER(access_interface, value, "access", "outer-tpid", 0, 65535);
+    if(value) {
+        access_config->access_tpid_outer = json_number_value(value);
+    }
+
+    JSON_OBJ_GET_NUMBER(access_interface, value, "access", "inner-tpid", 0, 65535);
+    if(value) {
+        access_config->access_tpid_inner = json_number_value(value);
+    }
+
+    JSON_OBJ_GET_NUMBER(access_interface, value, "access", "third-tpid", 0, 65535);
+    if(value) {
+        access_config->access_tpid_three = json_number_value(value);
+    }
+
+    JSON_OBJ_GET_NUMBER(access_interface, value, "access", "priority-outer", 0, 7);
+    if(value) {
+        access_config->access_vlan_priority_outer = json_number_value(value);
+    }
+
+    JSON_OBJ_GET_NUMBER(access_interface, value, "access", "priority-inner", 0, 7);
+    if(value) {
+        access_config->access_vlan_priority_inner = json_number_value(value);
+    }
+
+    JSON_OBJ_GET_NUMBER(access_interface, value, "access", "priority-third", 0, 7);
+    if(value) {
+        access_config->access_vlan_priority_three = json_number_value(value);
     }
 
     JSON_OBJ_GET_NUMBER(access_interface, value, "access", "ppp-mru", 64, 9000);

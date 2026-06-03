@@ -30,6 +30,19 @@ bbl_arp_client_tx(bbl_arp_client_s *client)
     eth.vlan_outer = session->vlan_key.outer_vlan_id;
     eth.vlan_inner = session->vlan_key.inner_vlan_id;
     eth.vlan_three = session->access_third_vlan;
+    /* Use configurable TPID for outer VLAN, fallback to qinq flag for backward compatibility */
+    if (session->access_config->access_tpid_outer) {
+        eth.qinq = (session->access_config->access_tpid_outer == ETH_TYPE_QINQ);
+    } else {
+        eth.qinq = session->access_config->qinq;
+    }
+    /* Set TPID for inner and third VLANs (default to standard VLAN if not configured) */
+    eth.vlan_tpid_inner = session->access_config->access_tpid_inner ? session->access_config->access_tpid_inner : ETH_TYPE_VLAN;
+    eth.vlan_tpid_three = session->access_config->access_tpid_three ? session->access_config->access_tpid_three : ETH_TYPE_VLAN;
+    /* Use per-VLAN priority configuration */
+    eth.vlan_outer_priority = session->access_config->access_vlan_priority_outer ? session->access_config->access_vlan_priority_outer : 0;
+    eth.vlan_inner_priority = session->access_config->access_vlan_priority_inner ? session->access_config->access_vlan_priority_inner : eth.vlan_outer_priority;
+    eth.vlan_three_priority = session->access_config->access_vlan_priority_three ? session->access_config->access_vlan_priority_three : eth.vlan_outer_priority;
     arp.sender = session->client_mac;
     arp.sender_ip = session->ip_address;    
     return bbl_txq_to_buffer(session->access_interface->txq, &eth);

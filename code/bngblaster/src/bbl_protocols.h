@@ -649,12 +649,15 @@ typedef struct bbl_ethernet_header_ {
     uint16_t  vlan_three; /* third VLAN */
     uint8_t   vlan_outer_priority;
     uint8_t   vlan_inner_priority;
+    uint8_t   vlan_three_priority;
 
-    uint8_t   tos;    
-    uint8_t   ttl;    
+    uint8_t   tos;
+    uint8_t   ttl;
 
     bool      lwip;
-    bool      qinq; /* ethertype 0x88a8 */
+    bool      qinq; /* ethertype 0x88a8 for outer VLAN */
+    uint16_t  vlan_tpid_inner; /* ethertype for inner VLAN (0x8100 or 0x88a8) */
+    uint16_t  vlan_tpid_three; /* ethertype for third VLAN (0x8100 or 0x88a8) */
 
     uint8_t    *dst; /* destination MAC address */
     uint8_t    *src; /* source MAC address */

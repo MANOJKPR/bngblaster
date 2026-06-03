@@ -2342,6 +2342,7 @@ encode_ethernet(uint8_t *buf, uint16_t *len,
 
     /* Add VLAN header */
     if(eth->vlan_outer) {
+        /* Outer VLAN */
         if(eth->qinq) {
             *(uint16_t*)buf = htobe16(ETH_TYPE_QINQ);
         } else {
@@ -2351,15 +2352,20 @@ encode_ethernet(uint8_t *buf, uint16_t *len,
         eth->vlan_outer |= eth->vlan_outer_priority << 13;
         *(uint16_t*)buf = htobe16(eth->vlan_outer);
         BUMP_WRITE_BUFFER(buf, len, sizeof(uint16_t));
+
         if(eth->vlan_inner) {
-            *(uint16_t*)buf = htobe16(ETH_TYPE_VLAN);
+            /* Inner VLAN */
+            *(uint16_t*)buf = htobe16(eth->vlan_tpid_inner ? eth->vlan_tpid_inner : ETH_TYPE_VLAN);
             BUMP_WRITE_BUFFER(buf, len, sizeof(uint16_t));
             eth->vlan_inner |= eth->vlan_inner_priority << 13;
             *(uint16_t*)buf = htobe16(eth->vlan_inner);
             BUMP_WRITE_BUFFER(buf, len, sizeof(uint16_t));
+
             if(eth->vlan_three) {
-                *(uint16_t*)buf = htobe16(ETH_TYPE_VLAN);
+                /* Third VLAN */
+                *(uint16_t*)buf = htobe16(eth->vlan_tpid_three ? eth->vlan_tpid_three : ETH_TYPE_VLAN);
                 BUMP_WRITE_BUFFER(buf, len, sizeof(uint16_t));
+                eth->vlan_three |= eth->vlan_three_priority << 13;
                 *(uint16_t*)buf = htobe16(eth->vlan_three);
                 BUMP_WRITE_BUFFER(buf, len, sizeof(uint16_t));
             }
