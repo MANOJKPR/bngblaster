@@ -60,6 +60,28 @@ statically as shown in the example below.
         }
     }
 
+IPv6 static addresses are configured with ``address-ipv6`` (start),
+``address-ipv6-iter`` (per-session step) and ``gateway-ipv6`` (neighbor to
+solicit). Each session sends an ICMPv6 Neighbor Solicitation using its
+iterated IPv6 address as the source.
+
+.. code-block:: json
+
+    {
+        "interfaces": {
+            "access": [
+            {
+                "interface": "eth1",
+                "type": "ipoe",
+                "vlan-mode": "1:1",
+                "address-ipv6": "fc66::100",
+                "address-ipv6-iter": "fc66::1",
+                "gateway-ipv6": "fc66::1",
+            }
+        ]
+        }
+    }
+
 DHCPv4/v6
 ~~~~~~~~~
 

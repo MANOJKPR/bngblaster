@@ -646,6 +646,31 @@ ipv6_addr_not_zero(ipv6addr_t *addr)
 }
 
 /**
+ * ipv6_increment
+ *
+ * Increment an IPv6 address in-place by a given step.
+ *
+ * IPv6 addresses are stored in big-endian (network) byte order, so the
+ * addition is performed from the least significant byte (the last byte)
+ * toward the most significant byte, propagating the carry.
+ *
+ * @param addr IPv6 address, updated in place (a + step)
+ * @param step increment value
+ */
+void
+ipv6_increment(ipv6addr_t addr, const ipv6addr_t step)
+{
+    uint8_t carry = 0;
+    int idx;
+
+    for (idx = sizeof(ipv6addr_t) - 1; idx >= 0; idx--) {
+        int sum = (uint8_t)addr[idx] + (uint8_t)step[idx] + carry;
+        addr[idx] = (uint8_t)(sum & 0xff);
+        carry = sum > 0xff ? 1 : 0;
+    }
+}
+
+/**
  * ipv6_prefix_not_zero
  *
  * @param prefix IPv6 prefix

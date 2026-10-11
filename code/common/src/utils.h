@@ -51,6 +51,7 @@ void  ipv4_multicast_mac(const uint32_t ipv4, uint8_t* mac);
 void  ipv6_multicast_mac(const uint8_t *ipv6, uint8_t* mac);
 
 bool  ipv6_addr_not_zero(ipv6addr_t *addr);
+void  ipv6_increment(ipv6addr_t addr, const ipv6addr_t step);
 bool  ipv6_prefix_not_zero(ipv6_prefix *prefix);
 
 char *replace_substring(const char* s, const char* old, const char* new);

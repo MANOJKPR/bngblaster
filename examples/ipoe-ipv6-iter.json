@@ -1,0 +1,26 @@
+{
+    "interfaces": {
+        "access": [
+        {
+            "interface": "veth0",
+            "type": "ipoe",
+            "vlan-mode": "N:1",
+            "outer-vlan": 4000,
+            "ipv6": true,
+            "address-ipv6": "10::100",
+            "address-ipv6-iter": "::1",
+            "gateway-ipv6": "10::1"
+        }
+     ]
+    },
+    "ipoe": {
+        "ipv4": false,
+        "ipv6": true
+    },
+    "dhcpv6": {
+	    "enable":false
+    },
+    "sessions": {
+        "count": 10
+    }
+}

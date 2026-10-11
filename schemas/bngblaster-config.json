@@ -1749,6 +1749,11 @@
                     "description": "Static IPv6 address (IPoE only)",
                     "format": "ipv6"
                 },
+                "address-ipv6-iter": {
+                    "type": "string",
+                    "description": "Per-session IPv6 address increment step (IPoE only)",
+                    "format": "ipv6"
+                },
                 "gateway-ipv6": {
                     "type": "string",
                     "description": "Static IPv6 gateway address (IPoE only)",

@@ -1069,6 +1069,9 @@ bbl_sessions_init()
                 }
                 if(ipv6_addr_not_zero(&access_config->static_ip6)) {
                     memcpy(&session->ipv6_address, &access_config->static_ip6, sizeof(ipv6addr_t));
+                    if(ipv6_addr_not_zero(&access_config->static_ip6_iter)) {
+                        ipv6_increment(access_config->static_ip6, access_config->static_ip6_iter);
+                    }
                 }
             }
         }

@@ -466,7 +466,11 @@ bbl_tx_encode_packet_icmpv6_ns(bbl_session_s *session)
     eth.type = ETH_TYPE_IPV6;
     eth.next = &ipv6;
     ipv6.dst = (void*)ipv6_dst;
-    ipv6.src = (void*)session->link_local_ipv6_address;
+    if(ipv6_addr_not_zero(&session->ipv6_address)) {
+        ipv6.src = (void*)session->ipv6_address;
+    } else {
+        ipv6.src = (void*)session->link_local_ipv6_address;
+    }
     ipv6.ttl = 255;
     ipv6.protocol = IPV6_NEXT_HEADER_ICMPV6;
     ipv6.next = &icmpv6;
