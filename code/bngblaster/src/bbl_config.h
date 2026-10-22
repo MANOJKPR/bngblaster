@@ -82,6 +82,8 @@ typedef struct bbl_access_config_
     ipv6addr_t static_ip6_iter;
     ipv6addr_t static_ip6_ll;
     ipv6addr_t static_gateway6;
+    uint8_t static_gateway6_mac[ETH_ADDR_LEN];
+    bool un_ns; /* Send ICMPv6 NS unicast (directly to gateway MAC) */
 
     /* Authentication */
     const char *username;

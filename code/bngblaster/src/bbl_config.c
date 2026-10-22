@@ -1052,7 +1052,8 @@ json_parse_access_interface(json_t *access_interface, bbl_access_config_s *acces
         "inner-vlan-step", "third-vlan", "ppp-mru",
         "address", "address-iter", "gateway", "gateway-iter", 
         "ipv6-link-local", "address-ipv6", "address-ipv6-iter", "gateway-ipv6",
-        "username", "password", "authentication-protocol", 
+        "unicast-ns", "gateway-ipv6-mac",
+        "username", "password", "authentication-protocol",
         "agent-circuit-id", "agent-remote-id",
         "access-aggregation-circuit-id",
         "rate-up", "rate-down", "dsl-type",
@@ -1278,6 +1279,30 @@ json_parse_access_interface(json_t *access_interface, bbl_access_config_s *acces
             fprintf(stderr, "JSON config error: Invalid value for access->gateway-ipv6\n");
             return false;
         }
+    }
+
+    JSON_OBJ_GET_BOOL(access_interface, value, "access", "unicast-ns");
+    access_config->un_ns = json_boolean_value(value);
+
+    bool mac_given = false;
+    if(json_unpack(access_interface, "{s:s}", "gateway-ipv6-mac", &s) == 0) {
+        if(sscanf(s, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx",
+                  &access_config->static_gateway6_mac[0],
+                  &access_config->static_gateway6_mac[1],
+                  &access_config->static_gateway6_mac[2],
+                  &access_config->static_gateway6_mac[3],
+                  &access_config->static_gateway6_mac[4],
+                  &access_config->static_gateway6_mac[5]) != 6)
+        {
+            fprintf(stderr, "JSON config error: Invalid value for access->gateway-ipv6-mac\n");
+            return false;
+        }
+        mac_given = true;
+    }
+
+    if(access_config->un_ns && !mac_given) {
+        fprintf(stderr, "JSON config error: access->gateway-ipv6-mac is required when unicast-ns is enabled\n");
+        return false;
     }
 
     /* Optionally overload some settings per range */

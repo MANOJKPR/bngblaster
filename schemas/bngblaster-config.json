@@ -1759,6 +1759,16 @@
                     "description": "Static IPv6 gateway address (IPoE only)",
                     "format": "ipv6"
                 },
+                "unicast-ns": {
+                    "type": "boolean",
+                    "description": "Send ICMPv6 Neighbor Solicitation unicast directly to the gateway MAC (IPoE only)",
+                    "default": false
+                },
+                "gateway-ipv6-mac": {
+                    "type": "string",
+                    "description": "L2 MAC address of the static IPv6 gateway, used when unicast-ns is enabled (IPoE only)",
+                    "format": "mac"
+                },
                 "cfm-cc": {
                     "type": "boolean",
                     "default": false

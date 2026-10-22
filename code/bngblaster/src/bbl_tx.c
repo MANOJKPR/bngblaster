@@ -465,6 +465,24 @@ bbl_tx_encode_packet_icmpv6_ns(bbl_session_s *session)
 
     eth.type = ETH_TYPE_IPV6;
     eth.next = &ipv6;
+
+    if(session->access_config->un_ns) {
+        /* Full unicast NS: target the gateway address directly. */
+        memcpy(ipv6_dst, &session->icmpv6_ns_request, sizeof(ipv6addr_t));
+        if(memcmp(session->access_config->static_gateway6_mac, "\0\0\0\0\0\0", ETH_ADDR_LEN) != 0) {
+            memcpy(mac, session->access_config->static_gateway6_mac, ETH_ADDR_LEN);
+            eth.dst = mac;
+        }
+    } else {
+        /* Solicited-node multicast NS to the gateway. */
+        memcpy(ipv6_dst, &ipv6_solicited_node_multicast, sizeof(ipv6addr_t));
+        ((uint8_t*)ipv6_dst)[13] = ((uint8_t*)session->icmpv6_ns_request)[13];
+        ((uint8_t*)ipv6_dst)[14] = ((uint8_t*)session->icmpv6_ns_request)[14];
+        ((uint8_t*)ipv6_dst)[15] = ((uint8_t*)session->icmpv6_ns_request)[15];
+        ipv6_multicast_mac(ipv6_dst, mac);
+        eth.dst = mac;
+    }
+
     ipv6.dst = (void*)ipv6_dst;
     if(ipv6_addr_not_zero(&session->ipv6_address)) {
         ipv6.src = (void*)session->ipv6_address;
